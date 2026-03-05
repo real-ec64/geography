@@ -394,7 +394,7 @@ while True:
 
     if completed == True:
         total = data['point'].sum()
-        perc  = int(total/length) * 100
+        perc  = int(total/length * 100)
         print()
         print(f'---Final Report: {total}/{length} ({perc}%)---')
 
@@ -440,17 +440,17 @@ while True:
             if (total * 100 >= player_log['capitals_score'].iloc[0] * player_log['capitals_num'].iloc[0]) | (player_log['capitals_score'].iloc[0] == 0):
                     logs_new.loc[logs_new['player'] == name, 'capitals_score'] = perc
                     logs_new.loc[logs_new['player'] == name, 'capitals_num'] = length
-                    print(f'New High Score! {perc}% with {length} countries')
+                    print(f'New High Score! {total*100}: {perc}% with {length} countries')
         if select == 2:
             if (total * 100 >= player_log['iso2_score'].iloc[0] * player_log['iso2_num'].iloc[0]) | (player_log['iso2_score'].iloc[0] == 0):
                     logs_new.loc[logs_new['player'] == name, 'iso2_score'] = perc
                     logs_new.loc[logs_new['player'] == name, 'iso2_num'] = length
-                    print(f'New High Score! {perc}% with {length} countries')
+                    print(f'New High Score! {total*100}: {perc}% with {length} countries')
         if select == 3:
             if (total * 100 >= player_log['iso3_score'].iloc[0] * player_log['iso3_num'].iloc[0]) | (player_log['iso3_score'].iloc[0] == 0):
                     logs_new.loc[logs_new['player'] == name, 'iso3_score'] = perc
                     logs_new.loc[logs_new['player'] == name, 'iso3_num'] = length
-                    print(f'New High Score! {total}: {perc}% with {length} countries')
+                    print(f'New High Score! {total*100}: {perc}% with {length} countries')
 
         logs_new = logs_new.dropna(subset = ['capitals_score', 'iso3_score', 'iso2_score'], how = 'all')
         logs_new.to_csv('input/logs.csv', index = False)
