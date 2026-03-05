@@ -438,17 +438,17 @@ while True:
 
         if select == 1:
             if (total * 100 >= player_log['capitals_score'].iloc[0] * player_log['capitals_num'].iloc[0]) | (player_log['capitals_score'].iloc[0] == 0):
-                    logs_new.loc[logs_new['player'] == name, 'capitals_score'] = perc
+                    logs_new.loc[logs_new['player'] == name, 'capitals_score'] = int(perc)
                     logs_new.loc[logs_new['player'] == name, 'capitals_num'] = length
                     print(f'New High Score! {perc}% with {length} countries')
         if select == 2:
             if (total * 100 >= player_log['iso2_score'].iloc[0] * player_log['iso2_num'].iloc[0]) | (player_log['iso2_score'].iloc[0] == 0):
-                    logs_new.loc[logs_new['player'] == name, 'iso2_score'] = perc
+                    logs_new.loc[logs_new['player'] == name, 'iso2_score'] = int(perc)
                     logs_new.loc[logs_new['player'] == name, 'iso2_num'] = length
                     print(f'New High Score! {perc}% with {length} countries')
         if select == 3:
             if (total * 100 >= player_log['iso3_score'].iloc[0] * player_log['iso3_num'].iloc[0]) | (player_log['iso3_score'].iloc[0] == 0):
-                    logs_new.loc[logs_new['player'] == name, 'iso3_score'] = perc
+                    logs_new.loc[logs_new['player'] == name, 'iso3_score'] = int(perc)
                     logs_new.loc[logs_new['player'] == name, 'iso3_num'] = length
                     print(f'New High Score! {total}: {perc}% with {length} countries')
 
