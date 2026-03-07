@@ -2,7 +2,7 @@
 # Author      : Eric Chang                                          #
 # Date        : 03/03/26                                            #
 # Description : Quiz Time                                           #
-# Last Edit   : EC 3/5/26                                           #
+# Last Edit   : EC 3/6/26                                           #
 #####################################################################
 
 
@@ -109,10 +109,11 @@ while True:
 
         elif select == 5:
             print('**** HALL OF FAME ****')
+            print()
             hall = logs.copy()
             hall['total'] = (hall['iso3_score'] * hall['iso3_num']) + (hall['iso2_score'] * hall['iso2_num']) + (hall['capitals_score'] * hall['capitals_num'])
             hall = hall.sort_values(by = 'total', ascending = False)
-            if (hall['total'].iloc[0] > 0):
+            if (len(hall) > 0):
                 print(f"**1** {hall['player'].iloc[0]}: {hall['total'].iloc[0]} points")
                 print('     Awards:')
                 if (hall['geo_master'].iloc[0] == 1):
@@ -172,19 +173,25 @@ while True:
                         print(f"  ISO-3 Stats: {hall['iso3_score'].iloc[2]}% for {hall['iso3_num'].iloc[2]} countries")
             else:
                 print('Keep playing different quizzes to appear here. Nothing to see here yet...')
+                print()
 
             print('[1] Go Back')
-            print('[2] Quit')
+            print('[2] Clear Scoreboard (permanent!)')
+            print('[3] Quit')
 
             while True:
                 second_choice = int(input('Choice: '))
                 if second_choice == 1:
                     select = 0
                     break
-                if second_choice == 2:
+                if second_choice == 3:
                     select = 8
                     again = 'n'
                     break
+                if second_choice == 2:
+                    logs = logs.iloc[0:0]
+                    logs.to_csv('input/logs.csv')
+                    print('Player logs cleared')
                 else:
                     print('Please enter a valid input.')
 
@@ -200,6 +207,7 @@ while True:
             print('Second, choose how many countries you would like to be tested on (Max 197).')
             print("Type 'idk' to give up the question, and 'Quit' to forfeit the game.")
             print('Good luck!')
+            print()
             print('[1] Go Back')
             print('[2] Quit')
 
