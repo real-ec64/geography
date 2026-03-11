@@ -9,6 +9,7 @@
 ##### SET UP ________________________________________________________
 
 ### Import Packages
+import os
 import re
 import random
 import pandas as pd
@@ -23,10 +24,20 @@ data_orig['gdp_pc'] = data_orig['gdp'] / data_orig['pop']
 def clean(s):
     return re.sub(r'[^a-z0-9]', '', str(s).lower())
 
+### Define Clear
+def clear():
+    if (os.name == 'nt'):
+        _ = os.system('cls')
+    else:
+        _ = os.system('clear')
+
 ##### INTRODUCTION __________________________________________________
 
 start = 1
+play  = 0
 again = ''
+
+clear()
 
 while True:
 
@@ -47,6 +58,7 @@ while True:
             start = 2
             print()
             print('Welcome to the GEO quiz!')
+            print()
             name = input('What is your name? ')
             print()
             player_log = logs[logs['player'] == name].copy()
@@ -90,16 +102,30 @@ while True:
             select = int(input('Main Choice: '))
             print()
         if (select > 0) & (select < 4):
-            print('How many countries would you like? (Max 197)')
+            clear()
+            play = 1
+            if select == 1:
+                print('You Have Chosen: Capitals')
+            if select == 2:
+                print('You Have Chosen: ISO-2 Codes')
+            if select == 3:
+                print('You Have Chosen: ISO-3 Codes')
+            print()
+            print('How many countries would you like? (Max 197, enter 0 to restart)')
             while True:
                 length = int(input('Country Choice: '))
                 if length == 197:
+                    clear()
                     print('A true challenger...')
                     setup = 1
                     break
                 if (length < 197) & (length > 0):
-                    print(f'Commencing with {length} countries')
                     setup = 1
+                    clear()
+                    break
+                if (length == 0):
+                    select = 0
+                    clear()
                     break
                 else:
                     print('Please enter valid input')
@@ -108,6 +134,7 @@ while True:
             select = random.randint(1, 3)
 
         elif select == 5:
+            clear()
             print('**** HALL OF FAME ****')
             print()
             hall = logs.copy()
@@ -183,6 +210,7 @@ while True:
                 second_choice = int(input('Choice: '))
                 if second_choice == 1:
                     select = 0
+                    clear()
                     break
                 if second_choice == 3:
                     select = 8
@@ -198,8 +226,10 @@ while True:
         elif select == 6:
             start = 1
             select = 0
+            clear()
 
         elif select == 7:
+            clear()
             print('Welcome to the world geo quiz! Will you complete to be the GEO Master?')
             print('First, choose what you would like to be tested on: capitals of the world,')
             print('or ISO Codes (2-3 character abbreviations based on the International Organization')
@@ -215,6 +245,7 @@ while True:
                 second_choice = int(input('Choice: '))
                 if second_choice == 1:
                     select = 0
+                    clear()
                     break
                 if second_choice == 2:
                     select = 8
@@ -231,42 +262,62 @@ while True:
             select = 0
 
 
-    ##### CAPITALS __________________________________________________
+    ##### GAME PLAY _________________________________________________
 
     if select == 1:
+        name  = 'Capitals'
+        name2 = 'capitals'
+        name3 = 'capital'
+        name4 = 'Capital'
+
+    if select == 2:
+        name  = 'ISO-2 Codes'
+        name2 = 'iso2'
+        name3 = 'iso2'
+        name4 = 'ISO-2'
+
+    if select == 3:
+        name  = 'ISO-3 Codes'
+        name2 = 'iso3'
+        name3 = 'iso3'
+        name4 = 'ISO-3'
+
+    if play == 1:
+
         print()
-        print('---Capitals---')
+        print(f' ----------{name}----------')
+        print(f'        ({length} countries)')
 
         if (len(player_log) > 0):
-            if (player_log['capitals_score'].iloc[0] > 0):
-                old_score = player_log['capitals_score'].iloc[0]
-                old_num = player_log['capitals_num'].iloc[0]
+            if (player_log[f'{name2}_score'].iloc[0] > 0):
+                old_score = player_log[f'{name2}_score'].iloc[0]
+                old_num = player_log[f'{name2}_num'].iloc[0]
                 print(f'(Old high score: {old_score} with {old_num} countries)')
-
-        total = 197
 
         data = data.sample(n=length).reset_index(drop=True)
 
+        i = 0
         for country in data['country_name']:
             if forfeit == True:
                 break
+            
+            i = i + 1
             print()
-            print(f'-{country}-')
+            print(f'-{country} ({i} / {length})-')
 
-            answer = data.loc[data['country_name'] == country, 'capital'].iloc[0]
+            answer = data.loc[data['country_name'] == country, f'{name3}'].iloc[0]
             answer_clean = clean(answer)
 
             attempt = 1
             while attempt < 4:
-                resp = clean(input('Capital: '))
+                resp = clean(input(f'{name4} : '))
                 if(resp == 'quit'):
                     forfeit = True
                     break
                 elif(resp != answer_clean):
-                    if (len(answer_clean) <= 4):
+                    if (len(answer_clean) == 4):
                         if((fuzz.ratio(resp, answer_clean) < 100) & (fuzz.ratio(resp, answer_clean) > 74)):
                             print('typo?')
-                        else: continue
                     elif (fuzz.ratio(resp, answer_clean) < 100) & (fuzz.ratio(resp, answer_clean) > 82):
                         print('typo?')
                     else:
@@ -274,7 +325,7 @@ while True:
                         attempt = attempt + 1
                         if (attempt ==4) | (resp == 'idk'):
                             attempt = 4
-                            print(f'Capital is: {answer}')
+                            print(f'{name4} is: {answer}')
                 else:
                     print('pass')
                     if attempt == 1:
@@ -283,113 +334,6 @@ while True:
                         data.loc[data['country_name'] == country, 'point'] = .5
                     if attempt == 3:
                         data.loc[data['country_name'] == country, 'point'] = .25
-                    attempt = 4
-        
-        if forfeit == False:
-            completed = True
-        elif forfeit == True:
-            completed = False
-
-
-    ##### ISO-2 _____________________________________________________
-
-    if select == 2:
-        print()
-        print('---ISO-2---')
-
-        if (len(player_log) > 0):
-            if (player_log['iso2_score'].iloc[0] > 0):
-                old_score = player_log['iso2_score'].iloc[0]
-                old_num = player_log['iso2_num'].iloc[0]
-                print(f'(Old high score: {old_score} with {old_num} countries)')
-
-        total = 197
-
-        data = data.sample(n=length).reset_index(drop=True)
-
-        for country in data['country_name']:
-            if forfeit == True:
-                break
-            print()
-            print(f'-{country}-')
-
-            answer = data.loc[data['country_name'] == country, 'iso2'].iloc[0]
-            answer_clean = clean(answer)
-
-            attempt = 1
-            while attempt < 4:
-                resp = clean(input('ISO-2: '))
-
-                if(resp == 'quit'):
-                    forfeit = True
-                    break
-                elif(resp != answer_clean):
-                    print('fail')
-                    attempt = attempt + 1
-                    if (attempt ==4) | (resp == 'idk'):
-                        attempt = 4
-                        print(f'ISO-2 is: {answer}')
-                else:
-                    print('pass')
-                    if attempt == 1:
-                        data.loc[data['country_name'] == country, 'point'] = 1
-                    if attempt == 2:
-                        data.loc[data['country_name'] == country, 'point'] = .8
-                    if attempt == 3:
-                        data.loc[data['country_name'] == country, 'point'] = .6
-                    attempt = 4
-        
-        if forfeit == False:
-            completed = True
-        elif forfeit == True:
-            completed = False
-
-    ##### ISO-3 _____________________________________________________
-
-    if select == 3:
-        print()
-        print('---ISO-3---')
-
-        if (len(player_log) > 0):
-            if (player_log['iso3_score'].iloc[0] > 0):
-                old_score = player_log['iso3_score'].iloc[0]
-                old_num = player_log['iso3_num'].iloc[0]
-                print(f'(Old high score: {old_score} with {old_num} countries)')
-
-        data = data.sample(n=length).reset_index(drop=True)
-
-        for country in data['country_name']:
-
-            if forfeit == True:
-                break
-
-            print()
-            print(f'-{country}-')
-
-            answer = data.loc[data['country_name'] == country, 'iso3'].iloc[0]
-            answer_clean = clean(answer)
-
-            attempt = 1
-            while attempt < 4:
-                resp = clean(input('ISO-3: '))
-
-                if(resp == 'quit'):
-                    forfeit = True
-                    break
-                if(resp != answer_clean):
-                    print('fail')
-                    attempt = attempt + 1
-                    if (attempt ==4) | (resp == 'idk'):
-                        attempt = 4
-                        print(f'ISO-3 is: {answer}')
-                else:
-                    print('pass')
-                    if attempt == 1:
-                        data.loc[data['country_name'] == country, 'point'] = 1
-                    if attempt == 2:
-                        data.loc[data['country_name'] == country, 'point'] = .75
-                    if attempt == 3:
-                        data.loc[data['country_name'] == country, 'point'] = .5
                     attempt = 4
         
         if forfeit == False:
@@ -409,24 +353,14 @@ while True:
         if perc == 100:
             if length == 197:
                 if select == 1:
-                    if player_log['capitals_king'].iloc[0] == 1:
-                        print("You've done it again, Capital King! Do you dare try our other quizzes?")
+                    if player_log[f'{name2}_king'].iloc[0] == 1:
+                        print(f"You've done it again, {name4} King! Do you dare try our other quizzes?")
                     else:
                         logs_new.loc[logs_new['player'] == name, 'capitals_king'] = 1
-                        print('You are the true CAPITAL Master! Do you dare try our other quizzes?')
-                if select == 2:
-                    if player_log['iso2_king'].iloc[0] == 1:
-                        print("You've done it again, ISO-2 King! Do you dare try our other quizzes?")
-                    else:
-                        logs_new.loc[logs_new['player'] == name, 'iso2_king'] = 1
-                        print('You are the true ISO-2 Master! Do you dare try our other quizzes?')
-                if select == 3:
-                    if player_log['iso3_king'].iloc[0] == 1:
-                        print("You've done it again, ISO-3 King! Do you dare try our other quizzes?")
-                    else:
-                        logs_new.loc[logs_new['player'] == name, 'iso3_king'] = 1
-                        print('You are the true ISO-3 Master! Do you dare try our other quizzes?')
+                        print(f'You are the true {name} Master! Do you dare try our other quizzes?')
                 if (player_log['iso2_king'].iloc[0] == 1) & (player_log['iso3_king'].iloc[0] == 1) & (player_log['capitals_king'].iloc[0] == 1):
+                    print('You truly are the GEO master! Congratulations')
+                else:
                     print('You have completed the GEO challenge and are officially the GEO master! Congratulations')
             else:
                 print('perfect')
@@ -444,26 +378,16 @@ while True:
             print('horrible job!')
 
 
-        if select == 1:
-            if (total * 100 >= player_log['capitals_score'].iloc[0] * player_log['capitals_num'].iloc[0]) | (player_log['capitals_score'].iloc[0] == 0):
-                    logs_new.loc[logs_new['player'] == name, 'capitals_score'] = perc
-                    logs_new.loc[logs_new['player'] == name, 'capitals_num'] = length
-                    print(f'New High Score! {total*100}: {perc}% with {length} countries')
-        if select == 2:
-            if (total * 100 >= player_log['iso2_score'].iloc[0] * player_log['iso2_num'].iloc[0]) | (player_log['iso2_score'].iloc[0] == 0):
-                    logs_new.loc[logs_new['player'] == name, 'iso2_score'] = perc
-                    logs_new.loc[logs_new['player'] == name, 'iso2_num'] = length
-                    print(f'New High Score! {total*100}: {perc}% with {length} countries')
-        if select == 3:
-            if (total * 100 >= player_log['iso3_score'].iloc[0] * player_log['iso3_num'].iloc[0]) | (player_log['iso3_score'].iloc[0] == 0):
-                    logs_new.loc[logs_new['player'] == name, 'iso3_score'] = perc
-                    logs_new.loc[logs_new['player'] == name, 'iso3_num'] = length
-                    print(f'New High Score! {total*100}: {perc}% with {length} countries')
+        if (total * 100 >= player_log[f'{name2}_score'].iloc[0] * player_log[f'{name2}_num'].iloc[0]) | (player_log[f'{name2}_score'].iloc[0] == 0):
+                logs_new.loc[logs_new['player'] == name, f'{name2}_score'] = perc
+                logs_new.loc[logs_new['player'] == name, f'{name2}_num'] = length
+                print(f'New High Score! {total*100}: {perc}% with {length} countries')
 
         logs_new = logs_new.dropna(subset = ['capitals_score', 'iso3_score', 'iso2_score'], how = 'all')
         logs_new.to_csv('input/logs.csv', index = False)
 
     while (again != 'n'):
+        print()
         again = clean(input('Play again? [Y/N]   ' ))
         if (again == 'n') | (again == 'y'):
             break
@@ -473,4 +397,5 @@ while True:
         print('Have a Geo-ful day!')
         break
     if again == 'y':
+        clear()
         print('Challenge accepted.')
