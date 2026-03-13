@@ -83,9 +83,10 @@ while True:
                     print(f'Welcome back {name}!')
             else:
                 print(f'Welcome to the GEO quiz, {name}!')
-                logs_new.loc[len(logs_new)] = {'player': name}
+                logs_new.loc[len(logs_new), 'player'] = name
 
         player_log = logs_new[logs_new['player'] == name].copy()
+        player_log = player_log.fillna(0)
 
         if select == 0:
             print()
@@ -256,6 +257,7 @@ while True:
 
         elif select == 8:
             again = 'n'
+            play = 0
             break
         else:
             print('Please enter valid input')
@@ -265,19 +267,19 @@ while True:
     ##### GAME PLAY _________________________________________________
 
     if select == 1:
-        name  = 'Capitals'
+        name1  = 'Capitals'
         name2 = 'capitals'
         name3 = 'capital'
         name4 = 'Capital'
 
     if select == 2:
-        name  = 'ISO-2 Codes'
+        name1  = 'ISO-2 Codes'
         name2 = 'iso2'
         name3 = 'iso2'
         name4 = 'ISO-2'
 
     if select == 3:
-        name  = 'ISO-3 Codes'
+        name1  = 'ISO-3 Codes'
         name2 = 'iso3'
         name3 = 'iso3'
         name4 = 'ISO-3'
@@ -285,7 +287,7 @@ while True:
     if play == 1:
 
         print()
-        print(f' ----------{name}----------')
+        print(f' ----------{name1}----------')
         print(f'        ({length} countries)')
 
         if (len(player_log) > 0):
@@ -377,13 +379,12 @@ while True:
         if (perc < 20):
             print('horrible job!')
 
-
         if (total * 100 >= player_log[f'{name2}_score'].iloc[0] * player_log[f'{name2}_num'].iloc[0]) | (player_log[f'{name2}_score'].iloc[0] == 0):
-                logs_new.loc[logs_new['player'] == name, f'{name2}_score'] = perc
-                logs_new.loc[logs_new['player'] == name, f'{name2}_num'] = length
-                print(f'New High Score! {total*100}: {perc}% with {length} countries')
+            logs_new.loc[logs_new['player'] == name, f'{name2}_score'] = perc
+            logs_new.loc[logs_new['player'] == name, f'{name2}_num'] = length
+            print(f'New High Score! {total*100}: {perc}% with {length} countries')
 
-        logs_new = logs_new.dropna(subset = ['capitals_score', 'iso3_score', 'iso2_score'], how = 'all')
+
         logs_new.to_csv('input/logs.csv', index = False)
 
     while (again != 'n'):
